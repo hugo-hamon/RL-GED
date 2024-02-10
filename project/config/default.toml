@@ -1,0 +1,11 @@
+[mcts]
+exploration_constant = 2.0
+simulations_per_iteration = 100
+
+[model]
+iterations = 20
+self_play_iterations = 100
+epochs = 4
+batch_size = 64
+maximal_iterations = 100
+temperature = 1
