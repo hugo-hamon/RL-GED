@@ -1,5 +1,5 @@
 venv/
 *.log
 *.pt
-*.
+*.pyc
 events.out.tfevents.*
