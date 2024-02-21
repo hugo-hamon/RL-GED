@@ -38,7 +38,7 @@ class AlphaZero:
             state = torch.tensor(state, dtype=torch.float32)
             policy_targets = torch.tensor(policy_targets, dtype=torch.float32)
             value_targets = torch.tensor(value_targets, dtype=torch.float32)
-
+            print(f"state: {state}")
             out_policy, out_value = self.model(state)
 
             policy_loss = F.cross_entropy(out_policy, policy_targets)
