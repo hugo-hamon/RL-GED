@@ -1,8 +1,12 @@
 # RL-GED
 
+## Note: Work in Progress
+
+This project is currently under development and is not yet fully functional.
+
 ## Description
 
-This project has the goal of implementing a Reinforcement Learning algorithm to solve the Graph Edit Distance problem. The algorithm is based on the AlphaZero algorithm, which is a combination of Monte Carlo Tree Search and a deep neural network. The project is implemented in Python and uses the PyTorch library for the neural network.
+This project aims to implement a Reinforcement Learning algorithm for the Graph Edit Distance (GED) problem. The algorithm is based on the AlphaZero approach, which combines Monte Carlo Tree Search with a deep neural network. The project is developed in Python and utilizes the PyTorch library for the neural network.
 
 ## Usage
 
