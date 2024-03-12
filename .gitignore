@@ -2,4 +2,5 @@ venv/
 *.log
 *.pt
 *.pyc
+*.pkl
 events.out.tfevents.*
