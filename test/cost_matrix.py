@@ -49,7 +49,6 @@ def cost_path(g1, g2, path, cost):
     for i, j, k in g2_edges:
         if (i, j) in {(i, j) for (i, j, _) in g1_edges_prime}:
             g_inter[(i, j)] = k
-    ic(g_inter)
 
     return p_cost
 

@@ -34,7 +34,7 @@ def load_data(data_path: str, ged_path: str) -> pd.DataFrame:
 
     # Create graphs objects
     graphs = {}
-    for name in list(names.keys())[:100]:
+    for name in list(names.keys()):
         G = nx.Graph()
         for i, node in enumerate(nodes[name]):
             G.add_node(i, weight=node)
@@ -82,13 +82,13 @@ def get_cost_matrix(g1: nx.Graph, g2: nx.Graph, cost: dict) -> np.ndarray:
 
     # Create the delete cost matrix
     delete_cost = np.zeros((n, n))
-    for i, node_1 in enumerate(g1.nodes):
-        delete_cost[i, :] = cost["n_del"]
+    for i, j in itertools.product(range(n), range(n)):
+        delete_cost[i, j] = cost["n_del"]
 
     # Create the insert cost matrix
     insert_cost = np.zeros((m, m))
-    for j, node_2 in enumerate(g2.nodes):
-        insert_cost[:, j] = cost["n_ins"]
+    for i, j in itertools.product(range(m), range(m)):
+        insert_cost[i, j] = cost["n_ins"]
 
     # Create the substitution cost matrix
     sub_cost = np.zeros((m, n))
@@ -99,10 +99,10 @@ def get_cost_matrix(g1: nx.Graph, g2: nx.Graph, cost: dict) -> np.ndarray:
         if i < n and j < m:
             cost_matrix[i, j] = degree_cost[i, j]
         elif i < n:
-            cost_matrix[i, j] = delete_cost[i, j - m - 1]
+            cost_matrix[i, j] = delete_cost[i, j - m]
         elif j < m:
-            cost_matrix[i, j] = insert_cost[i - n - 1, j]
+            cost_matrix[i, j] = insert_cost[i - n, j]
         else:
-            cost_matrix[i, j] = sub_cost[i - n - 1, j - m - 1]
+            cost_matrix[i, j] = sub_cost[i - n, j - m]
 
     return cost_matrix
