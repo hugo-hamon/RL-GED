@@ -7,50 +7,27 @@ import numpy as np
 import json
 
 
+
+
+
 def cost_path(g1, g2, path, cost):
-    p_cost = 0
-    # node cost
-    nodes = list(path)
-    for node in nodes:
-        if node[0] == node[1]:
-            continue
-        if node[0] == -1:
-            p_cost += cost["n_ins"]
-        elif node[1] == -1:
-            p_cost += cost["n_del"]
-        else:
-            p_cost += cost["n_sub"]
+    """Return the cost of the path."""
+    n = len(g1.nodes)
+    m = len(g2.nodes)
 
-    # edge cost
-    substitution = {i: j for i, j in nodes if i != -1 and j != -1}
-    g1_edges_prime = {
-        (substitution[i], substitution[j], k)
-        for (i, j, k) in {(i, j, k["weight"]) for (i, j, k) in g1.edges(data=True)}
-        if i in substitution and j in substitution
-    }
-
-    g2_edges = {(i, j, k["weight"]) for (i, j, k) in g2.edges(data=True)}
-
-    g_diff = {
-        (i, j): k
-        for i, j, k in g1_edges_prime
-        if (i, j) not in {(i, j) for (i, j, _) in g2_edges}
-    }
-    for i, j, k in g2_edges:
-        if (i, j) not in {(i, j) for (i, j, _) in g1_edges_prime}:
-            g_diff[(i, j)] = k
-    # insert / delete cost
-    p_cost += cost["e_ins"] * len(g_diff)
-    g_inter = {
-        (i, j): k
-        for i, j, k in g1_edges_prime
-        if (i, j) in {(i, j) for (i, j, _) in g2_edges}
-    }
-    for i, j, k in g2_edges:
-        if (i, j) in {(i, j) for (i, j, _) in g1_edges_prime}:
-            g_inter[(i, j)] = k
-
-    return p_cost
+    cost = 0
+    for i, j in path:
+        if i < n and j < m:
+            degree_diff = abs(g1.degree[i] - g2.degree[j])
+            value_cost = 0 if g1.nodes[i]["weight"] == g2.nodes[j]["weight"] else 1
+            cost += value_cost + degree_diff
+        elif i < n:
+            degree = g1.degree[i]
+            cost += degree + 1
+        elif j < m:
+            degree = g2.degree[j]
+            cost += degree + 1
+    return cost
 
 
 def get_bound(g1, g2, cost_dict) -> tuple[float, float]:
