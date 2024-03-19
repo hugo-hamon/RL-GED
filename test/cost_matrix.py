@@ -13,7 +13,7 @@ def cost_path(g1, g2, path, cost):
     nodes = list(path)
     for node in nodes:
         if node[0] == node[1]:
-            continue
+            p_cost += cost["n_sub"]
         if node[0] == -1:
             p_cost += cost["n_ins"]
         elif node[1] == -1:

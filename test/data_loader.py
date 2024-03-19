@@ -4,9 +4,10 @@ import numpy as np
 import itertools
 import json
 import tqdm
+from itertools import permutations
 
 COST = {
-    'n_ins': 4, 'n_del': 4, 'n_sub': 2,
+    'n_ins': 1, 'n_del': 1, 'n_sub': 1,
     'e_ins': 1, 'e_del': 1, 'e_sub': 1
 }
 
@@ -34,7 +35,7 @@ def load_data(data_path: str, ged_path: str) -> pd.DataFrame:
 
     # Create graphs objects
     graphs = {}
-    for name in list(names.keys()):
+    for name in list(names.keys())[:100]:
         G = nx.Graph()
         for i, node in enumerate(nodes[name]):
             G.add_node(i, weight=node)
@@ -55,6 +56,33 @@ def load_data(data_path: str, ged_path: str) -> pd.DataFrame:
         g2 = graphs[row["g2"]]
         cost_matrix = get_cost_matrix(g1, g2, COST)
         data.append([g1, g2, cost_matrix, row["ged"]])
+
+    return pd.DataFrame(data, columns=["g1", "g2", "cost_matrix", "ged"])
+
+
+def generate_data(size: int, max_nodes: int) -> pd.DataFrame:
+    """Generate random data."""
+
+    graphs = []
+    for _ in range(size):
+        random_size = np.random.randint(5, max_nodes // 2)
+        # Random graph with random connections
+        G = nx.fast_gnp_random_graph(random_size, 0.5)
+        # Check if the graph is connected
+        while not nx.is_connected(G):
+            # get the connected components
+            components = list(nx.connected_components(G))
+            # connect the components
+            G.add_edge(components[0].pop(), components[1].pop())
+        graphs.append(G)
+        
+
+    data = []
+    for g1, g2 in permutations(graphs, 2):
+        cost_matrix = get_cost_matrix(g1, g2, COST)
+        # ged = nx.graph_edit_distance(g1, g2)
+        ged = 0
+        data.append([g1, g2, cost_matrix, ged])
 
     return pd.DataFrame(data, columns=["g1", "g2", "cost_matrix", "ged"])
 

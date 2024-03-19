@@ -99,8 +99,8 @@ def generate_datas(n: int, size: int) -> tuple[np.ndarray, np.ndarray]:
 
 if __name__ == "__main__":
     # Paramètres
-    n = 10000  # Number of samples
-    size = 2  # Size of the matrix
+    n = 1000  # Number of samples
+    size = 5  # Size of the matrix
 
     # Génération des données
     start = time.time()
