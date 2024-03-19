@@ -7,6 +7,9 @@ import numpy as np
 import json
 
 
+
+
+
 def cost_path(g1, g2, path, cost):
     p_cost = 0
     # node cost
@@ -51,6 +54,25 @@ def cost_path(g1, g2, path, cost):
             g_inter[(i, j)] = k
 
     return p_cost
+
+def cost_path_v2(g1, g2, path, cost):
+    """Return the cost of the path."""
+    n = len(g1.nodes)
+    m = len(g2.nodes)
+
+    cost = 0
+    for i, j in path:
+        if i < n and j < m:
+            degree_diff = abs(g1.degree[i] - g2.degree[j])
+            value_cost = 0 if g1.nodes[i]["weight"] == g2.nodes[j]["weight"] else 1
+            cost += value_cost + degree_diff
+        elif i < n:
+            degree = g1.degree[i]
+            cost += degree + 1
+        elif j < m:
+            degree = g2.degree[j]
+            cost += degree + 1
+    return cost
 
 
 def get_bound(g1, g2, cost_dict) -> tuple[float, float]:

@@ -26,7 +26,6 @@ def load_data(data_path: str, ged_path: str) -> pd.DataFrame:
     # Load graphs from the json
     with open(data_path, "r") as file:
         datas = json.load(file)
-    
 
     names = datas["nom"]
     nodes = datas["nodes"]
@@ -106,17 +105,21 @@ def get_cost_matrix(g1: nx.Graph, g2: nx.Graph, cost: dict) -> np.ndarray:
     degree_cost = np.zeros((n, m))
     for i, node_1 in enumerate(g1.nodes):
         for j, node_2 in enumerate(g2.nodes):
-            degree_cost[i, j] = abs(g1.degree[node_1] - g2.degree[node_2])
+            degree = abs(g1.degree[node_1] - g2.degree[node_2])
+            cost_sub = 0 if g1.nodes[node_1]["weight"] == g2.nodes[node_2]["weight"] else 1
+            degree_cost[i, j] = cost_sub + degree
 
     # Create the delete cost matrix
     delete_cost = np.zeros((n, n))
     for i, j in itertools.product(range(n), range(n)):
-        delete_cost[i, j] = cost["n_del"]
+        node_degree = g1.degree[i]
+        delete_cost[i, j] = 1 + node_degree
 
     # Create the insert cost matrix
     insert_cost = np.zeros((m, m))
     for i, j in itertools.product(range(m), range(m)):
-        insert_cost[i, j] = cost["n_ins"]
+        node_degree = g2.degree[i]
+        insert_cost[i, j] = 1 + node_degree
 
     # Create the substitution cost matrix
     sub_cost = np.zeros((m, n))
@@ -134,3 +137,39 @@ def get_cost_matrix(g1: nx.Graph, g2: nx.Graph, cost: dict) -> np.ndarray:
             cost_matrix[i, j] = sub_cost[i - n, j - m]
 
     return cost_matrix
+
+
+def generate_data(n: int, max_size: int, verbose: bool = False) -> pd.DataFrame:
+    """
+    Generate n random graphs and their GED.
+
+    Args:
+        n (int): The number of graphs to generate.
+        max_size (int): The maximum size of the graphs.
+
+    Returns:
+        pd.DataFrame: The dataframe containing for each row the two graphs, the cost matrix and the GED.
+    """
+    graphs = []
+    for _ in range(n):
+        size = np.random.randint(2, max_size)
+        graph = nx.fast_gnp_random_graph(size, 0.5)
+        while not nx.is_connected(graph):
+            graph = nx.fast_gnp_random_graph(size, 0.5)
+        # Add random weights to the nodes
+        for node in graph.nodes:
+            graph.nodes[node]["weight"] = np.random.randint(0, 10)
+
+        graphs.append(graph)
+
+    data = []
+
+    combinations = itertools.combinations(graphs, 2)
+    if verbose:
+        combinations = tqdm.tqdm(combinations, total=n * (n - 1) // 2)
+    for g1, g2 in combinations:
+        cost_matrix = get_cost_matrix(g1, g2, COST)
+        ged = nx.graph_edit_distance(g1, g2)
+        data.append([g1, g2, cost_matrix, ged])
+
+    return pd.DataFrame(data, columns=["g1", "g2", "cost_matrix", "ged"])
