@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 from munkres import Munkres
 from data_loader import *
 import seaborn as sns
+import networkx as nx
 import numpy as np
 import pickle
 import tqdm
@@ -37,7 +38,7 @@ if __name__ == "__main__":
     for i in tqdm.tqdm(range(data.shape[0])[:1000]):
         g1 = data.iloc[i]["g1"]
         g2 = data.iloc[i]["g2"]
-        
+
         data_row = data.iloc[i]
         cost_matrix = np.array(data_row["cost_matrix"])
         # print(np.round(cost_matrix, 2), file=open("cost_matrix.txt", "w"))
@@ -64,7 +65,6 @@ if __name__ == "__main__":
 
     # Compute the MSE
     result = np.array(result)
-
 
     # Plot the result
     mse = np.mean((result[:, 0] - result[:, 2]) ** 2)
