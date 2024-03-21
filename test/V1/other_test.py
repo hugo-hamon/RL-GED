@@ -101,7 +101,7 @@ def generate_data_parallel(n: int, max_size: int, verbose: bool = False) -> pd.D
 
 
 # Example usage
-data_size = 1_000_000
+data_size = 1_000
 n = int((1 + np.sqrt(1 + 8 * data_size)) / 2)
 print(f"Generating {n} graphs")
 
