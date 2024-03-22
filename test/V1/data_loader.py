@@ -117,9 +117,9 @@ def get_cost_matrix(g1: nx.Graph, g2: nx.Graph, cost: dict) -> np.ndarray:
 
     # Create the insert cost matrix
     insert_cost = np.zeros((m, m))
-    for i, j in itertools.product(range(m), range(m)):
-        node_degree = g2.degree[i]
-        insert_cost[i, j] = 1 + node_degree
+    for j in range(m):
+        node_degree = g2.degree[j]
+        insert_cost[:, j] = 1 + node_degree
 
     # Create the substitution cost matrix
     sub_cost = np.zeros((m, n))
