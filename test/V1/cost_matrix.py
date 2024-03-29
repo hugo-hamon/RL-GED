@@ -7,22 +7,36 @@ import numpy as np
 import json
 
 
-
-
-
 def cost_path(g1, g2, path, cost):
+    """Return the cost of the path."""
+    # process path
+    n = len(g1.nodes)
+    m = len(g2.nodes)
+    new_path = []
+    for i, j in path:
+        if i < n and j < m:
+            new_path.append((i, j))
+        elif i < n:
+            new_path.append((i, -1))
+        elif j < m:
+            new_path.append((-1, j))
+
+    path = new_path
+
     p_cost = 0
     # node cost
     nodes = list(path)
     for node in nodes:
         if node[0] == node[1]:
-            p_cost += cost["n_sub"]
+            degree_diff = abs(g1.degree[node[0]] - g2.degree[node[1]])
+            value_cost = 0 if g1.nodes[node[0]]["weight"] == g2.nodes[node[1]]["weight"] else 1
+            p_cost += value_cost + degree_diff
         if node[0] == -1:
-            p_cost += cost["n_ins"]
+            degree = g2.degree[node[1]]
+            p_cost += degree
         elif node[1] == -1:
-            p_cost += cost["n_del"]
-        else:
-            p_cost += cost["n_sub"]
+            degree = g1.degree[node[0]]
+            p_cost += degree
 
     # edge cost
     substitution = {i: j for i, j in nodes if i != -1 and j != -1}
@@ -54,25 +68,6 @@ def cost_path(g1, g2, path, cost):
             g_inter[(i, j)] = k
 
     return p_cost
-
-def cost_path_v2(g1, g2, path, cost):
-    """Return the cost of the path."""
-    n = len(g1.nodes)
-    m = len(g2.nodes)
-
-    cost = 0
-    for i, j in path:
-        if i < n and j < m:
-            degree_diff = abs(g1.degree[i] - g2.degree[j])
-            value_cost = 0 if g1.nodes[i]["weight"] == g2.nodes[j]["weight"] else 1
-            cost += value_cost + degree_diff
-        elif i < n:
-            degree = g1.degree[i]
-            cost += degree + 1
-        elif j < m:
-            degree = g2.degree[j]
-            cost += degree + 1
-    return cost
 
 
 def get_bound(g1, g2, cost_dict) -> tuple[float, float]:
