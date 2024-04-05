@@ -7,8 +7,6 @@ from munkres import Munkres
 from enum import Enum, auto
 import seaborn as sns
 import torch.nn as nn
-import networkx as nx
-import pandas as pd
 import numpy as np
 import pickle
 import torch
@@ -36,7 +34,7 @@ def make_resnet_model(state_size: int, device: torch.device) -> ResNet:
     ).to(device)
 
 
-CURRENT_MODEL = ModelManager.CNN
+CURRENT_MODEL = ModelManager.RESNET
 
 
 def manage_graphs_generation() -> None:
@@ -224,6 +222,7 @@ def benchmark_mcts(model_name: str) -> None:
     if CURRENT_MODEL == ModelManager.CNN:
         model = make_cnn_model(matrix_size**2, device)
     else:
+        print("ok")
         model = make_resnet_model(matrix_size**2, device)
     model.load_state_dict(torch.load(
         f"models/{model_name}.pth", map_location=device)
@@ -246,7 +245,7 @@ def benchmark_mcts(model_name: str) -> None:
         "temperature": 2,
         "stable_iterations": 100,
         "rollout_policy": "random",
-        "expansion_policy": "random"
+        "expansion_policy": "model"
     }
 
     mcts_values = []
